@@ -1,0 +1,61 @@
+Com base no ”Briefing” , preparei um script detalhado para a criação do seu aplicativo "Indica NCF Seguro". Siga este guia passo a passo para transformar sua visão em realidade no Android Studio:
+Script Detalhado: Aplicativo "NCFSegurosIndico" (31/01/2025)
+1. Resumo do App:
+Nome do App: NCF Seguros Indico 
+Conceito: Aplicativo para clientes da [Nome da Seguradora] indicarem amigos e familiares para contratar seguros. A cada indicação efetuada, o cliente recebe descontos progressivos em seu próprio seguro.
+Funcionalidades Principais:
+Login/Cadastro: Autenticação segura para clientes da seguradora.
+Tela de Indicações: Formulário simples para o cliente inserir dados de pessoas a serem indicadas (nome, telefone, e-mail).
+Histórico de Indicações: Lista das indicações realizadas pelo cliente, com status (pendente, em análise, efetivada, etc.).
+Recompensas/Descontos: Em
+Perfil do Usuário: Informações do cliente, dados do seguro, e acesso a configurações.
+(Opcional) Notificações Push: Todos
+
+
+2. Estrutura do Projeto (Telas e Fluxo de Navegação):
+Tela 1: Splash Screen (Tela Inicial)
+Rápida tela de apresentação com o logo da seguradora.
+Direciona para a tela de Login/Cadastro.
+Tela 2: Login/Cadastro
+Opções para login (se já for cliente) ou cadastro (para novos usuários - validar se o cadastro será feito diretamente no app ou se direciona para um sistema externo da seguradora).
+Pode usar autenticação por e-mail/senha ou outras formas (login social, etc.).
+
+Tela 3: Tela Principal (Dashboard)
+Menu de navegação (barra inferior ou menu lateral).
+Destaque para o programa de indicações e recompensas.
+Acesso rápido para "Indicar Agora".
+Resumo do histórico de indicações e descontos atuais.
+
+
+Tela 4: Tela de Indicação
+Formulário para inserir os dados da pessoa indicada (nome, telefone, e-mail, e talvez o tipo de seguro de interesse).
+Botão para enviar a indicação.
+Confirmação de envio da indicação.
+
+
+Tela 5: Tela de Histórico de Indicações
+Lista das indicações realizadas.
+Status de cada indicação (ex: "Pendente", "Em Análise", "Efetivada - Desconto Aplicado", "Não Elegível").
+Detalhes de cada indicação ao clicar em um item da lista.
+
+
+Tela 6: Tela de Recompensas/Descontos
+Visualização dos descontos já obtidos.
+Progressão para o próximo nível de desconto (ex: barra de progresso visual).
+
+
+Tela 7: Tela de Perfil
+Dados do cliente (nome, número da apólice, etc.).
+Opção para editar informações (se necessário).
+Acesso a configurações do app (notificações, privacidade, etc.).
+Opção de "Sair" (Logout).
+
+
+
+
+
+
+
+
+Fluxo de Navegação Básico:
+Tela Inicial -> Login/Cadastro -> Tela de navegação
