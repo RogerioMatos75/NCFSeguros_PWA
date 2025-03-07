@@ -1,11 +1,10 @@
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { signInWithGoogle, handleAuthRedirect } from "@/lib/auth";
+import { signInWithGoogle } from "@/lib/auth";
 import { useLocation } from "wouter";
 import { FcGoogle } from "react-icons/fc";
 import { useToast } from "@/hooks/use-toast";
@@ -23,64 +22,54 @@ export function LoginForm() {
     resolver: zodResolver(loginSchema),
   });
 
-  useEffect(() => {
-    handleAuthRedirect().then((user) => {
+  const handleGoogleLogin = async () => {
+    try {
+      const user = await signInWithGoogle();
       if (user) {
         // Verificar se o usuário é admin
-        fetch(`/api/users/${user.uid}`).then(async (res) => {
-          if (res.ok) {
-            const userData = await res.json();
-            if (userData.isAdmin) {
-              setLocation("/admin/dashboard");
-            } else {
-              setLocation("/dashboard");
-            }
+        const res = await fetch(`/api/users/${user.uid}`);
+        if (res.ok) {
+          const userData = await res.json();
+          if (userData.isAdmin) {
+            setLocation("/admin/dashboard");
+          } else {
+            setLocation("/dashboard");
           }
-        }).catch((error) => {
-          console.error("Error checking user role:", error);
-          toast({
-            variant: "destructive",
-            title: "Erro",
-            description: "Erro ao verificar permissões do usuário"
+        } else {
+          // Se o usuário não existe no banco, criar um novo
+          const createRes = await fetch("/api/users", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              uid: user.uid,
+              email: user.email,
+              name: user.displayName || "Usuário",
+              isAdmin: false
+            })
           });
-        });
-      }
-    }).catch((error) => {
-      console.error("Auth redirect error:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro de autenticação",
-        description: "Não foi possível fazer login com o Google"
-      });
-    });
-  }, [setLocation, toast]);
 
-  const onSubmit = async (data: z.infer<typeof loginSchema>) => {
-    try {
-      // Implement email/password login
-      setLocation("/dashboard");
+          if (createRes.ok) {
+            setLocation("/dashboard");
+          }
+        }
+      }
     } catch (error) {
       console.error(error);
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Falha ao fazer login"
+        description: "Falha ao fazer login com Google"
       });
     }
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      await signInWithGoogle();
-      // O redirecionamento será tratado pelo useEffect
-    } catch (error) {
-      console.error(error);
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Falha ao iniciar login com Google"
-      });
-    }
+  const onSubmit = async (data: z.infer<typeof loginSchema>) => {
+    // Email/password login será implementado depois
+    toast({
+      variant: "destructive",
+      title: "Não implementado",
+      description: "Por favor, use o login com Google"
+    });
   };
 
   return (
