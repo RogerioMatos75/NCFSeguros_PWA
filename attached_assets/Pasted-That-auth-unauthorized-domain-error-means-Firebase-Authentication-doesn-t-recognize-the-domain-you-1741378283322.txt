@@ -1,0 +1,16 @@
+That "auth/unauthorized-domain" error means Firebase Authentication doesn't recognize the domain your app is trying to sign in from. This usually happens when you haven't added the correct domain to your Firebase project's authorized domains list in the Firebase console.
+
+Since you're building an Android app, the domain isn't a website address in the traditional sense. Instead, it's related to your app's package name or bundle ID: com.ncf.seguros.indico.v2 . However, Firebase doesn't directly use the package name for Android in the same way it does for web apps. The issue likely stems from a misconfiguration somewhere else. Let's troubleshoot this systematically:
+
+1. Verify Your Firebase Project Setup:
+
+Authentication is Enabled: Double-check that you've enabled Google Sign-In within your Firebase project's Authentication settings. You'll find this in the Firebase console under the "Authentication" section. Make sure the Google provider is enabled and configured correctly.
+
+SHA-1 Certificate Fingerprint (Crucial for Android): This is the most likely culprit. Your Android app needs to be properly registered with your Firebase project. This involves adding your app's SHA-1 signing certificate fingerprint to your Firebase console. This fingerprint is unique to your app's signing configuration (debug or release).
+
+How to find your SHA-1 fingerprint: You'll need to use the keytool command-line tool (included in the Java Development Kit). Here's a typical command:
+
+keytool -list -v -keystore <path_to_your_keystore> -alias <your_alias> -storepass <your_keystore_password> -keypass <your_key_password>
+Replace <path_to_your_keystore> , <your_alias> , <your_keystore_password> , and <your_key_password> with your actual values. The output will include your SHA-1 fingerprint. Keep this information safe and secure!
+
+Adding the SHA-1 to Firebase: After generating the SHA-1, go to your Firebase project in the console, select your Android app, and you should find a place to enter your SHA-1 fingerprint. You need to add the SHA-1 for both your debug and release keys.
