@@ -3,6 +3,8 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertUserSchema, insertIndicationSchema, insertRewardSchema } from "@shared/schema";
 
+const ADMIN_SECRET_KEY = process.env.ADMIN_SECRET_KEY || "ncf-admin-2024";
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Middleware para verificar se o usuário é admin
   const isAdmin = async (req: any, res: any, next: any) => {
@@ -122,6 +124,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(reward);
     } catch (error) {
       res.status(400).json({ error: "Failed to fetch reward" });
+    }
+  });
+
+  // Admin promotion route
+  app.post("/api/admin/promote", async (req, res) => {
+    try {
+      const { email, adminKey } = req.body;
+
+      if (adminKey !== ADMIN_SECRET_KEY) {
+        res.status(403).json({ error: "Invalid admin key" });
+        return;
+      }
+
+      const users = await storage.getAllUsers();
+      const user = users.find(u => u.email === email);
+
+      if (!user) {
+        res.status(404).json({ error: "User not found" });
+        return;
+      }
+
+      const updatedUser = await storage.updateUser(user.id, { isAdmin: true });
+      res.json(updatedUser);
+    } catch (error) {
+      res.status(400).json({ error: "Failed to promote user" });
     }
   });
 

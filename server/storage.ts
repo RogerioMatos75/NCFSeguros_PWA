@@ -9,6 +9,7 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   getUserByUid(uid: string): Promise<User | undefined>;
   updateUser(id: number, data: Partial<User>): Promise<User>;
+  getAllUsers(): Promise<User[]>; // Adicionar na interface IStorage
 
   // Indication operations
   createIndication(userId: number, indication: InsertIndication): Promise<Indication>;
@@ -118,6 +119,10 @@ export class MemStorage implements IStorage {
   async getActiveRewardByUserId(userId: number): Promise<Reward | undefined> {
     return Array.from(this.rewards.values())
       .find(reward => reward.userId === userId && reward.isActive);
+  }
+
+  async getAllUsers(): Promise<User[]> { // Adicionar na classe MemStorage
+    return Array.from(this.users.values());
   }
 }
 

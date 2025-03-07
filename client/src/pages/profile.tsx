@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { LogOut, UserCircle } from "lucide-react";
+import { LogOut, UserCircle, Shield } from "lucide-react";
 import { useLocation } from "wouter";
 import { logOut } from "@/lib/auth";
 import { auth } from "@/lib/firebase";
@@ -54,7 +54,16 @@ export default function Profile() {
                 {user?.createdAt && new Date(user.createdAt).toLocaleDateString()}
               </p>
             </div>
-
+            {user?.isAdmin && (
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => setLocation("/admin/promote")}
+              >
+                <Shield className="mr-2 h-4 w-4" />
+                Promover Administrador
+              </Button>
+            )}
             <Button
               variant="destructive"
               className="w-full mt-8"

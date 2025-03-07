@@ -13,6 +13,7 @@ import History from "@/pages/history";
 import Rewards from "@/pages/rewards";
 import Profile from "@/pages/profile";
 import NotFound from "@/pages/not-found";
+import AdminPromote from "@/pages/admin/promote";
 
 function Router() {
   return (
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/auth" component={Auth} />
       <Route path="/admin" component={AdminLogin} />
       <Route path="/admin/dashboard" component={AdminDashboard} />
+      <Route path="/admin/promote" component={AdminPromote} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/indicate" component={Indicate} />
       <Route path="/history" component={History} />
