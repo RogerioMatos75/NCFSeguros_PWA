@@ -1,12 +1,14 @@
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { signInWithGoogle } from "@/lib/auth";
+import { signInWithGoogle, handleAuthRedirect } from "@/lib/auth";
 import { useLocation } from "wouter";
 import { FcGoogle } from "react-icons/fc";
+import { useToast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
   email: z.string().email("Email inválido"),
@@ -15,9 +17,43 @@ const loginSchema = z.object({
 
 export function LoginForm() {
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
+
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
   });
+
+  useEffect(() => {
+    handleAuthRedirect().then((user) => {
+      if (user) {
+        // Verificar se o usuário é admin
+        fetch(`/api/users/${user.uid}`).then(async (res) => {
+          if (res.ok) {
+            const userData = await res.json();
+            if (userData.isAdmin) {
+              setLocation("/admin/dashboard");
+            } else {
+              setLocation("/dashboard");
+            }
+          }
+        }).catch((error) => {
+          console.error("Error checking user role:", error);
+          toast({
+            variant: "destructive",
+            title: "Erro",
+            description: "Erro ao verificar permissões do usuário"
+          });
+        });
+      }
+    }).catch((error) => {
+      console.error("Auth redirect error:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro de autenticação",
+        description: "Não foi possível fazer login com o Google"
+      });
+    });
+  }, [setLocation, toast]);
 
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
     try {
@@ -25,15 +61,25 @@ export function LoginForm() {
       setLocation("/dashboard");
     } catch (error) {
       console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Falha ao fazer login"
+      });
     }
   };
 
   const handleGoogleLogin = async () => {
     try {
       await signInWithGoogle();
-      setLocation("/dashboard");
+      // O redirecionamento será tratado pelo useEffect
     } catch (error) {
       console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Falha ao iniciar login com Google"
+      });
     }
   };
 
