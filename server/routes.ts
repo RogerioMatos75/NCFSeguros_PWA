@@ -38,22 +38,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(user);
   });
 
-  app.patch("/api/users/:uid", async (req, res) => {
-    try {
-      const user = await storage.getUserByUid(req.params.uid);
-      if (!user) {
-        res.status(404).json({ error: "User not found" });
-        return;
-      }
-
-      const updatedUser = await storage.updateUser(user.id, req.body);
-      res.json(updatedUser);
-    } catch (error) {
-      res.status(400).json({ error: "Failed to update user" });
-    }
-  });
-
-
   // Indication routes
   app.post("/api/users/:userId/indications", async (req, res) => {
     try {
@@ -76,7 +60,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Nova rota administrativa para listar todas as indicações
+  // Admin routes
   app.get("/api/admin/indications", async (req, res) => {
     try {
       const allIndications = await storage.getAllIndications();
@@ -91,9 +75,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { status } = req.body;
       const id = parseInt(req.params.id);
       const indication = await storage.updateIndicationStatus(id, status);
+
+      // Se a indicação foi aceita, criar uma recompensa
+      if (status === "completed") {
+        // TODO: Implementar lógica de recompensa
+        // await storage.createReward(indication.userId, { discountPercentage: 5 });
+      }
+
       res.json(indication);
     } catch (error) {
       res.status(400).json({ error: "Failed to update indication status" });
+    }
+  });
+
+  app.patch("/api/indications/:id/proposal", async (req, res) => {
+    try {
+      const { proposalLink } = req.body;
+      const id = parseInt(req.params.id);
+      const indication = await storage.updateIndicationProposal(id, proposalLink);
+      res.json(indication);
+    } catch (error) {
+      res.status(400).json({ error: "Failed to update proposal link" });
     }
   });
 

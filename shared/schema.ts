@@ -19,6 +19,9 @@ export const indications = pgTable("indications", {
   email: text("email").notNull(),
   phone: text("phone").notNull(),
   status: text("status").notNull().default("pending"),
+  proposalLink: text("proposal_link"),
+  notificationSent: boolean("notification_sent").default(false),
+  whatsappSent: boolean("whatsapp_sent").default(false),
   createdAt: timestamp("created_at").defaultNow()
 });
 
@@ -41,7 +44,10 @@ export const insertUserSchema = createInsertSchema(users).pick({
 export const insertIndicationSchema = createInsertSchema(indications).pick({
   name: true,
   email: true,
-  phone: true
+  phone: true,
+  proposalLink: true,
+  notificationSent: true,
+  whatsappSent:true
 });
 
 export const insertRewardSchema = createInsertSchema(rewards).pick({

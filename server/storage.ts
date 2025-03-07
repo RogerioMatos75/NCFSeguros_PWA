@@ -15,6 +15,7 @@ export interface IStorage {
   getIndicationsByUserId(userId: number): Promise<Indication[]>;
   getAllIndications(): Promise<Indication[]>;
   updateIndicationStatus(id: number, status: string): Promise<Indication>;
+  updateIndicationProposal(id: number, proposalLink: string): Promise<Indication>;
 
   // Reward operations
   createReward(userId: number, reward: InsertReward): Promise<Reward>;
@@ -36,7 +37,13 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentId.users++;
-    const user: User = { ...insertUser, id, createdAt: new Date() };
+    const user: User = {
+      ...insertUser,
+      id,
+      createdAt: new Date(),
+      policyNumber: insertUser.policyNumber || null,
+      isAdmin: insertUser.isAdmin || false
+    };
     this.users.set(id, user);
     return user;
   }
@@ -60,6 +67,9 @@ export class MemStorage implements IStorage {
       id,
       userId,
       status: "pending",
+      proposalLink: null,
+      notificationSent: false,
+      whatsappSent: false,
       createdAt: new Date()
     };
     this.indications.set(id, indication);
@@ -83,6 +93,14 @@ export class MemStorage implements IStorage {
     return updatedIndication;
   }
 
+  async updateIndicationProposal(id: number, proposalLink: string): Promise<Indication> {
+    const indication = this.indications.get(id);
+    if (!indication) throw new Error("Indication not found");
+    const updatedIndication = { ...indication, proposalLink, whatsappSent: true };
+    this.indications.set(id, updatedIndication);
+    return updatedIndication;
+  }
+
   async createReward(userId: number, insertReward: InsertReward): Promise<Reward> {
     const id = this.currentId.rewards++;
     const reward: Reward = {
@@ -90,7 +108,8 @@ export class MemStorage implements IStorage {
       id,
       userId,
       isActive: true,
-      createdAt: new Date()
+      createdAt: new Date(),
+      discountPercentage: insertReward.discountPercentage
     };
     this.rewards.set(id, reward);
     return reward;
