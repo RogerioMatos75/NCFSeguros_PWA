@@ -38,6 +38,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(user);
   });
 
+  app.patch("/api/users/:uid", async (req, res) => {
+    try {
+      const user = await storage.getUserByUid(req.params.uid);
+      if (!user) {
+        res.status(404).json({ error: "User not found" });
+        return;
+      }
+
+      const updatedUser = await storage.updateUser(user.id, req.body);
+      res.json(updatedUser);
+    } catch (error) {
+      res.status(400).json({ error: "Failed to update user" });
+    }
+  });
+
+
   // Indication routes
   app.post("/api/users/:userId/indications", async (req, res) => {
     try {
