@@ -8,6 +8,7 @@ import { signInWithGoogle } from "@/lib/auth";
 import { useLocation } from "wouter";
 import { FcGoogle } from "react-icons/fc";
 import { useToast } from "@/hooks/use-toast";
+import { Shield } from "lucide-react";
 
 const loginSchema = z.object({
   email: z.string().email("Email inválido"),
@@ -101,28 +102,42 @@ export function LoginForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">
-          Entrar
-        </Button>
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
+        <div className="grid gap-4">
+          <Button type="submit" className="w-full">
+            Entrar
+          </Button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Ou continue com
+              </span>
+            </div>
           </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
-              Ou continue com
-            </span>
-          </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={handleGoogleLogin}
+          >
+            <FcGoogle className="mr-2 h-4 w-4" />
+            Entrar com Google
+          </Button>
+
+          <Button
+            type="button"
+            variant="secondary"
+            className="w-full"
+            onClick={() => setLocation("/admin/login")}
+          >
+            <Shield className="mr-2 h-4 w-4" />
+            Acesso Administrador
+          </Button>
         </div>
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full"
-          onClick={handleGoogleLogin}
-        >
-          <FcGoogle className="mr-2 h-4 w-4" />
-          Google
-        </Button>
       </form>
     </Form>
   );

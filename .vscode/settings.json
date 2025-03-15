@@ -1,0 +1,14 @@
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "liveServer.settings.port": 4000,
+  "liveServer.settings.root": "/dist/public",
+  "liveServer.settings.CustomBrowser": "chrome",
+  "liveServer.settings.useLocalIp": true,
+  "liveServer.settings.host": "localhost"
+}

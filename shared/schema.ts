@@ -47,14 +47,23 @@ export const insertIndicationSchema = createInsertSchema(indications).pick({
   phone: true,
   proposalLink: true,
   notificationSent: true,
-  whatsappSent:true
+  whatsappSent: true
 });
 
 export const insertRewardSchema = createInsertSchema(rewards).pick({
   discountPercentage: true
 });
 
-export type User = typeof users.$inferSelect;
+export interface User {
+  id: number;
+  uid: string;
+  email: string;
+  name: string;
+  isAdmin: boolean;
+  policyNumber?: string;
+  createdAt: Date;
+}
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type Indication = typeof indications.$inferSelect;
 export type InsertIndication = z.infer<typeof insertIndicationSchema>;

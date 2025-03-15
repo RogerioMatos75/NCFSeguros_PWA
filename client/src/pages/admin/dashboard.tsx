@@ -4,18 +4,19 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, X, Send } from "lucide-react";
+import { Check, X, Send, ClipboardList } from "lucide-react";
 import type { Indication } from "@shared/schema";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useLocation } from "wouter";
 
 const statusMap = {
-  pending: { label: "Pendente", variant: "secondary" },
-  analyzing: { label: "Em Análise", variant: "warning" },
-  completed: { label: "Concluída", variant: "success" },
-  rejected: { label: "Rejeitada", variant: "destructive" },
+  pending: { label: "Pendente", variant: "secondary" as const },
+  analyzing: { label: "Em Análise", variant: "outline" as const },
+  completed: { label: "Concluída", variant: "default" as const },
+  rejected: { label: "Rejeitada", variant: "destructive" as const },
 } as const;
 
 export default function AdminDashboard() {
@@ -56,12 +57,32 @@ export default function AdminDashboard() {
     window.open(whatsappUrl, '_blank');
   };
 
+  const [, setLocation] = useLocation();
+
   if (isLoading) {
     return <div>Carregando...</div>;
   }
 
   return (
     <div className="container p-4">
+      <h1 className="text-2xl font-bold mb-6">Painel Administrativo</h1>
+      
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card className="cursor-pointer" onClick={() => setLocation("/admin/indications")}>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <ClipboardList className="mr-2 h-5 w-5" />
+              Gerenciar Indicações
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              Visualize e gerencie todas as indicações recebidas
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
       <Card>
         <CardHeader>
           <CardTitle>Todas as Indicações</CardTitle>

@@ -3,6 +3,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
 import { Navbar } from "@/components/navbar";
+import { ProtectedRoute } from "@/components/auth/protected-route";
 import Splash from "@/pages/splash";
 import Auth from "@/pages/auth";
 import AdminLogin from "@/pages/admin/login";
@@ -14,20 +15,58 @@ import Rewards from "@/pages/rewards";
 import Profile from "@/pages/profile";
 import NotFound from "@/pages/not-found";
 import AdminPromote from "@/pages/admin/promote";
+import AdminIndications from "@/pages/admin/indications";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Splash} />
       <Route path="/auth" component={Auth} />
-      <Route path="/admin" component={AdminLogin} />
-      <Route path="/admin/dashboard" component={AdminDashboard} />
-      <Route path="/admin/promote" component={AdminPromote} />
-      <Route path="/dashboard" component={Dashboard} />
-      <Route path="/indicate" component={Indicate} />
-      <Route path="/history" component={History} />
-      <Route path="/rewards" component={Rewards} />
-      <Route path="/profile" component={Profile} />
+      <Route path="/admin/login" component={AdminLogin} />
+      
+      {/* Rotas protegidas administrativas */}
+      <Route path="/admin/promote">
+        <ProtectedRoute adminOnly>
+          <AdminPromote />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin/dashboard">
+        <ProtectedRoute adminOnly>
+          <AdminDashboard />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin/indications">
+        <ProtectedRoute adminOnly>
+          <AdminIndications />
+        </ProtectedRoute>
+      </Route>
+
+      {/* Rotas protegidas normais */}
+      <Route path="/dashboard">
+        <ProtectedRoute>
+          <Dashboard />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/indicate">
+        <ProtectedRoute>
+          <Indicate />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/history">
+        <ProtectedRoute>
+          <History />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/rewards">
+        <ProtectedRoute>
+          <Rewards />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/profile">
+        <ProtectedRoute>
+          <Profile />
+        </ProtectedRoute>
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );
