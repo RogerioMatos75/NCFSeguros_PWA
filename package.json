@@ -12,7 +12,7 @@
     "build:server": "tsc -p tsconfig.server.json",
     "start": "node dist/server/index.js",
     "check": "tsc",
-    "db:push": "dotenv drizzle-kit push",
+    "db:push": "drizzle-kit push",
     "clean": "rimraf dist node_modules",
     "reset": "npm run clean && npm install",
     "preview": "vite preview --port 4000 --host",

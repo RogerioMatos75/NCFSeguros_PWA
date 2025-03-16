@@ -6,8 +6,11 @@ dotenv.config();
 export default {
   schema: './server/db/schema.ts',
   out: './server/db/migrations',
-  driver: 'pg',
+  driver: 'd1-http',
+  dialect: 'sqlite',
   dbCredentials: {
-    connectionString: process.env.DATABASE_URL || '',
+    accountId: process.env.CLOUDFLARE_ACCOUNT_ID || '',
+    databaseId: process.env.CLOUDFLARE_DATABASE_ID || '',
+    token: process.env.CLOUDFLARE_API_TOKEN || '',
   },
 } satisfies Config;
