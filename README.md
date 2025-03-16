@@ -43,6 +43,15 @@ cp .env.example .env
 npm run dev
 ```
 
+### ⚙️ Configuração do Vercel
+
+1. Acesse o dashboard do Vercel
+2. Selecione seu projeto
+3. Vá em Settings > Environment Variables
+4. Clique em "Import" (ícone de upload)
+5. Selecione seu arquivo .env local
+6. Verifique se todas as variáveis foram importadas corretamente
+
 ## 🛠️ Scripts Disponíveis
 
 - `npm run dev` - Inicia o ambiente de desenvolvimento

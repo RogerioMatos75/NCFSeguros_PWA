@@ -84,3 +84,16 @@ firebase-adminsdk.json
 public/
 dist/
 out/
+
+# Environment files
+.env
+.env.*
+!.env.example
+.env.*.local
+*.env
+
+# Firebase credentials
+*firebase-adminsdk*.json
+
+.vercel
+.env*.local

@@ -4,10 +4,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist/public",
   "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/index"
-    }
+    { "source": "/api/(.*)", "destination": "/api" }
   ],
   "functions": {
     "api/index.ts": {
@@ -16,11 +13,11 @@
     }
   },
   "env": {
-    "DATABASE_URL": "@database-url",
-    "FIREBASE_PROJECT_ID": "@firebase-project-id",
-    "FIREBASE_CLIENT_EMAIL": "@firebase-client-email",
-    "FIREBASE_PRIVATE_KEY": "@firebase-private-key",
-    "WHATSAPP_ACCESS_TOKEN": "@whatsapp-access-token",
-    "WHATSAPP_PHONE_NUMBER_ID": "@whatsapp-phone-number-id"
+    "DATABASE_URL": "postgresql://postgres:@Rmds2025@db.tpmxklpbqgvglwbtqwmu.supabase.co:5432/postgres",
+    "POSTGRES_PRISMA_URL": "postgresql://postgres:@Rmds2025@db.tpmxklpbqgvglwbtqwmu.supabase.co:5432/postgres?pgbouncer=true",
+    "POSTGRES_URL_NON_POOLING": "postgresql://postgres:@Rmds2025@db.tpmxklpbqgvglwbtqwmu.supabase.co:5432/postgres",
+    "FIREBASE_PROJECT_ID": "ncf-seguros-indico",
+    "FIREBASE_CLIENT_EMAIL": "firebase-adminsdk-fbsvc@ncf-seguros-indico.iam.gserviceaccount.com",
+    "FIREBASE_PRIVATE_KEY": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCgmMTFwk0NQA61\nuYz10zTmRWKDMf4ULgXHudhp/9DbYYopSl5NQM0p/rDJCcecrNBjiaUR7yNfhAl9\nP4SXz/EQR+7v2SGLVVLPz9j/tYygi2tsdgrgTlIQCOUd+P2bwJ6rHbbzyBS9e5DB\nlXbxJ9vX6STKpTz1yOkvN0g0EfmWITVZU/MujDfa6JSN3A+v3E5RbT1p/Y6fosYJ\nTuGEpfoNKV5mtgMDKYl881zMM0IhAM4h9AKy7G+2uKl+UNITD90ruJYEAkM1HkZE\n5X6LYG9VSvNuk/TXdoWMlOuB6HrNU1w0H+9OOAbXORsXKCmDgqudiHoTxuq7+1NR\nC11scZVBAgMBAAECggEATvzEb0XREu7KLVwtNe0jDAzdVoy8nF1Eb4b7J6twJK6V\nPxi6SAHSxtBjUAXU3TzsI8Db5PW67qwo5KbchrR6KtlObj5brsWQ/PAMGTzIhV/9\nPnPShp9O4l8VnYfM6JG1GJF9XeqvNMD1IhlqzlKd4NRlSZw63uJpulTU2PNsUAeO\nvCNW76qkes6jN7Dy3VpSaSNMTYoxwyFfikO3cu+ZDn0wEL4ZWNNZfLhR1fH8NiGi\nfn2Qo9niuAa03dYLOlayoS1GovUYUYk4lblqJ/dWf8pt+9bNQB5kUquzpRVf/KGg\nyZVYbIpRMHG2SRw5xtg1WF8SRsJhO4eNDPeftqZLxwKBgQDR5FFB93V/FVn3QNZ6\nwct5QJ13L5fKC7NMAYhbXgPzvqgGjWc572AJsZIULCdtyBQDvzKsHvzCv7ewdewg\n9A2tUxPgAUdSiHtLD8/qfTdY7wmPqUnTnrPVudypWESBt6dQvgCBFFIwcjT40dGT\n+hR6C2L1LZw9qf4a9K5Jeg01hwKBgQDD4D5TE/r1jHLojp4p99ApfW3ru1QpdIcN\no+LlMjdMqR03ou9ooC1YGXvQTA1yy1TVmVQbMBq/sF4pYjXtuEpofWz+uehi5Vat\nVgUciEwdvad9kn5yglu7BFZm5365ZrtNVcYVHQK6lFf12jY5o4tEmXIqqrcbf0oR\nGFzFTXGQ9wKBgQCvfgMi8NDg7O1H+oJaKWcDfq8qVDTJznafejiUjEsppaO/tsM0\ngZz+/eVx0Gk3NS7m4xpvJ4mXG81uUWqZMvWskeXwSaFktJDB9fqVyRRZ26NW5ui/\nc9ZRQRHq1c6R1wiiTfsF8gO2VgdMc8KTw2kTkimvbe9Q761yxFplPROGSQKBgBH2\nbIC94lPGT3tYKNT8btB/OidWBH/QudncX6BZHI0hLRa/EGlt1vqvS5VshAc08lCs\nQPRFUw6lI91zrjJgpiIy7l3lupPnKC25J7rYHPLVQ5jWaFYj8jmSSkIhlJN4AlEz\nPnkNMgTeObrIChT7FHh0Ae47vZL991LeAxPs6C89AoGBAIAQF9lAx9dOe1hshswR\nJfez3L1wFw3/1AvfB+HE6dIDYnpdjiDF15IbGjE8zWDZp/FvHhnGCDuS4nijq07g\nnxDLrs+AarUdiQ4ZvA2R0eVuVFyfhuVH5UAj12FOzPtopvDQqrSjiqxj+M0qlKuN\nhcNi/d7V9t8ygl6bYFIze44y\n-----END PRIVATE KEY-----\n"
   }
 }
