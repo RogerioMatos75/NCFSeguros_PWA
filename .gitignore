@@ -37,3 +37,50 @@ next-env.d.ts
 !.vscode/extensions.json
 !.vscode/launch.json
 !.vscode/settings.json
+
+# Database
+*.sqlite
+*.sqlite3
+
+# Logs
+logs
+*.log
+
+# Firebase
+firebase-debug.log*
+firebase-debug.*.log*
+
+# Large media files
+*.mp4
+*.tiff
+*.avi
+*.flv
+*.mov
+*.wmv
+
+# SSH Keys
+.ssh/
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+**/id_ed25519
+**/id_ed25519.pub
+**/known_hosts
+**/known_hosts.old
+
+# Additional security
+.env.production
+.env.development
+.env.local
+.env.staging
+
+# Firebase config
+src/lib/firebase-config.ts
+firebase-adminsdk.json
+
+# Build artifacts
+.cache/
+public/
+dist/
+out/
