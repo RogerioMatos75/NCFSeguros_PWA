@@ -4,8 +4,8 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
-    "dev:client": "vite --port 4000",
+    "dev": "vite",
+    "dev:all": "concurrently \"npm run dev\" \"npm run dev:server\"",
     "dev:server": "tsx watch server/index.ts",
     "build": "vite build",
     "build:client": "vite build",
