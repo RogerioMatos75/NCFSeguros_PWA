@@ -4,11 +4,12 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { signInWithGoogle } from "@/lib/auth";
 import { useLocation } from "wouter";
-import { FcGoogle } from "react-icons/fc";
 import { useToast } from "@/hooks/use-toast";
+import { FcGoogle } from "react-icons/fc";
 import { Shield } from "lucide-react";
+import { useAuth } from "./AuthProvider";
+import { signInWithGoogle } from "@/lib/auth";
 
 const loginSchema = z.object({
   email: z.string().email("Email inválido"),
@@ -18,6 +19,7 @@ const loginSchema = z.object({
 export function LoginForm() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { signIn } = useAuth();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -27,32 +29,17 @@ export function LoginForm() {
     try {
       const user = await signInWithGoogle();
       if (user) {
-        // Verificar se o usuário é admin
-        const res = await fetch(`/api/users/${user.uid}`);
-        if (res.ok) {
-          const userData = await res.json();
-          if (userData.isAdmin) {
-            setLocation("/admin/dashboard");
-          } else {
-            setLocation("/dashboard");
-          }
+        // Verificar role nos metadados
+        if (user.user_metadata?.role === 'admin') {
+          setLocation("/admin/dashboard");
         } else {
-          // Se o usuário não existe no banco, criar um novo
-          const createRes = await fetch("/api/users", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              uid: user.uid,
-              email: user.email,
-              name: user.displayName || "Usuário",
-              isAdmin: false
-            })
-          });
-
-          if (createRes.ok) {
-            setLocation("/dashboard");
-          }
+          setLocation("/dashboard");
         }
+
+        toast({
+          title: "Login realizado com sucesso",
+          description: "Bem-vindo de volta!"
+        });
       }
     } catch (error) {
       console.error(error);
@@ -65,12 +52,25 @@ export function LoginForm() {
   };
 
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
-    // Email/password login será implementado depois
-    toast({
-      variant: "destructive",
-      title: "Não implementado",
-      description: "Por favor, use o login com Google"
-    });
+    try {
+      const { error } = await signIn(data.email, data.password);
+
+      if (error) throw error;
+
+      toast({
+        title: "Login realizado com sucesso",
+        description: "Bem-vindo de volta!"
+      });
+
+      setLocation("/dashboard");
+    } catch (error) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao fazer login",
+        description: error instanceof Error ? error.message : "Credenciais inválidas"
+      });
+    }
   };
 
   return (

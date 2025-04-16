@@ -4,6 +4,7 @@ import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
 import { Navbar } from "@/components/navbar";
 import { ProtectedRoute } from "@/components/auth/protected-route";
+import { AuthProvider } from "@/components/auth/AuthProvider";
 import Splash from "@/pages/splash";
 import Auth from "@/pages/auth";
 import AdminLogin from "@/pages/admin/login";
@@ -17,54 +18,80 @@ import NotFound from "@/pages/not-found";
 import AdminPromote from "@/pages/admin/promote";
 import AdminIndications from "@/pages/admin/indications";
 
+// Layout para páginas que precisam de autenticação
+function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="min-h-screen bg-background">
+      {children}
+      <Navbar />
+    </div>
+  );
+}
+
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Splash} />
       <Route path="/auth" component={Auth} />
       <Route path="/admin/login" component={AdminLogin} />
-      
+
       {/* Rotas protegidas administrativas */}
       <Route path="/admin/promote">
         <ProtectedRoute adminOnly>
-          <AdminPromote />
+          <AuthenticatedLayout>
+            <AdminPromote />
+          </AuthenticatedLayout>
         </ProtectedRoute>
       </Route>
       <Route path="/admin/dashboard">
         <ProtectedRoute adminOnly>
-          <AdminDashboard />
+          <AuthenticatedLayout>
+            <AdminDashboard />
+          </AuthenticatedLayout>
         </ProtectedRoute>
       </Route>
       <Route path="/admin/indications">
         <ProtectedRoute adminOnly>
-          <AdminIndications />
+          <AuthenticatedLayout>
+            <AdminIndications />
+          </AuthenticatedLayout>
         </ProtectedRoute>
       </Route>
 
       {/* Rotas protegidas normais */}
       <Route path="/dashboard">
         <ProtectedRoute>
-          <Dashboard />
+          <AuthenticatedLayout>
+            <Dashboard />
+          </AuthenticatedLayout>
         </ProtectedRoute>
       </Route>
       <Route path="/indicate">
         <ProtectedRoute>
-          <Indicate />
+          <AuthenticatedLayout>
+            <Indicate />
+          </AuthenticatedLayout>
         </ProtectedRoute>
       </Route>
       <Route path="/history">
         <ProtectedRoute>
-          <History />
+          <AuthenticatedLayout>
+            <History />
+          </AuthenticatedLayout>
         </ProtectedRoute>
       </Route>
       <Route path="/rewards">
         <ProtectedRoute>
-          <Rewards />
+          <AuthenticatedLayout>
+            <Rewards />
+          </AuthenticatedLayout>
         </ProtectedRoute>
       </Route>
       <Route path="/profile">
         <ProtectedRoute>
-          <Profile />
+          <AuthenticatedLayout>
+            <Profile />
+          </AuthenticatedLayout>
         </ProtectedRoute>
       </Route>
       <Route component={NotFound} />
@@ -75,11 +102,12 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen bg-background">
-        <Router />
-        <Navbar />
-      </div>
-      <Toaster />
+      <AuthProvider>
+        <div className="min-h-screen bg-background">
+          <Router />
+        </div>
+        <Toaster />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

@@ -34,13 +34,13 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
-    port: 4000,
+    port: 5173,
     strictPort: true,
     host: true, // permite acesso externo
     cors: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:4000',
+        target: 'http://localhost:5173',
         changeOrigin: true
       }
     },
@@ -49,7 +49,7 @@ export default defineConfig({
     }
   },
   preview: {
-    port: 4000,
+    port: 5173,
     strictPort: true,
     host: true
   }

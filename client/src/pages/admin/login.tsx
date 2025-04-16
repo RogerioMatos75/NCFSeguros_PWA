@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { Lock } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 const adminLoginSchema = z.object({
   email: z.string().email("Email inválido"),
@@ -16,6 +18,7 @@ const adminLoginSchema = z.object({
 export default function AdminLogin() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { signIn } = useAuth();
 
   const form = useForm<z.infer<typeof adminLoginSchema>>({
     resolver: zodResolver(adminLoginSchema),
@@ -23,26 +26,35 @@ export default function AdminLogin() {
 
   const onSubmit = async (data: z.infer<typeof adminLoginSchema>) => {
     try {
-      const response = await fetch("/api/admin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+      // Tenta fazer login com Supabase
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password
       });
 
-      if (response.ok) {
-        setLocation("/admin/indications");
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Erro",
-          description: "Credenciais inválidas",
-        });
+      if (signInError) throw signInError;
+
+      // Verifica se o usuário é admin
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+      if (userError) throw userError;
+
+      if (!user || user.user_metadata.role !== 'admin') {
+        throw new Error('Acesso não autorizado. Apenas administradores podem entrar.');
       }
+
+      toast({
+        title: "Login realizado com sucesso",
+        description: "Bem-vindo ao painel administrativo"
+      });
+
+      setLocation("/admin/dashboard");
     } catch (error) {
+      console.error(error);
       toast({
         variant: "destructive",
-        title: "Erro",
-        description: "Falha ao fazer login",
+        title: "Erro ao fazer login",
+        description: error instanceof Error ? error.message : "Credenciais inválidas"
       });
     }
   };

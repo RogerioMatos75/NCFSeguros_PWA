@@ -1,8 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
-import { auth, type AuthUser } from "@/lib/firebase";
-import type { User } from "@shared/schema";
+import { useAuth } from "./AuthProvider";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -11,25 +9,22 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children, adminOnly = false }: ProtectedRouteProps) {
   const [, setLocation] = useLocation();
-  const currentUser = auth.currentUser as AuthUser | null;
-  
-  const { data: user } = useQuery<User | null>({
-    queryKey: [`/api/users/${currentUser?.uid}`],
-    enabled: !!currentUser?.uid,
-  });
+  const { user, role, loading } = useAuth();
 
   useEffect(() => {
-    if (!currentUser) {
-      setLocation("/auth");
-      return;
-    }
+    if (!loading) {
+      if (!user) {
+        setLocation("/auth");
+        return;
+      }
 
-    if (adminOnly && !user?.isAdmin) {
-      setLocation("/dashboard");
+      if (adminOnly && role !== 'admin') {
+        setLocation("/dashboard");
+      }
     }
-  }, [currentUser, user, setLocation, adminOnly]);
+  }, [user, role, loading, setLocation, adminOnly]);
 
-  if (!currentUser || (adminOnly && !user?.isAdmin)) {
+  if (loading || !user || (adminOnly && role !== 'admin')) {
     return null;
   }
 

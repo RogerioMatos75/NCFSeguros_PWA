@@ -5,26 +5,53 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useLocation } from "wouter";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/lib/supabase";
 
 const registerSchema = z.object({
-  name: z.string().min(3, "Nome deve ter no mínimo 3 caracteres"),
   email: z.string().email("Email inválido"),
-  policyNumber: z.string().min(1, "Número da apólice é obrigatório"),
   password: z.string().min(6, "Senha deve ter no mínimo 6 caracteres"),
+  confirmPassword: z.string().min(6, "Senha deve ter no mínimo 6 caracteres"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "As senhas não coincidem",
+  path: ["confirmPassword"],
 });
 
 export function RegisterForm() {
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
+
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
   });
 
   const onSubmit = async (data: z.infer<typeof registerSchema>) => {
     try {
-      // Implement registration
-      setLocation("/dashboard");
+      const { error } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          data: {
+            role: 'client' // papel padrão para novos usuários
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Registro realizado com sucesso",
+        description: "Verifique seu email para confirmar sua conta"
+      });
+
+      setLocation("/auth");
     } catch (error) {
       console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao criar conta",
+        description: error instanceof Error ? error.message : "Ocorreu um erro inesperado"
+      });
     }
   };
 
@@ -33,38 +60,12 @@ export function RegisterForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nome Completo</FormLabel>
-              <FormControl>
-                <Input placeholder="João Silva" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input placeholder="seu@email.com" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="policyNumber"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Número da Apólice</FormLabel>
-              <FormControl>
-                <Input placeholder="123456" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -83,8 +84,21 @@ export function RegisterForm() {
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="confirmPassword"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Confirme a Senha</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="******" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <Button type="submit" className="w-full">
-          Cadastrar
+          Criar Conta
         </Button>
       </form>
     </Form>

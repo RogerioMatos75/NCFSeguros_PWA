@@ -1,26 +1,19 @@
-import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useLocation } from "wouter";
+import { UserCircle, LogOut, Shield } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { LogOut, UserCircle, Shield } from "lucide-react";
-import { useLocation } from "wouter";
-import { logOut } from "@/lib/auth";
-import { auth } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
-import type { User } from "@shared/schema";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 export default function Profile() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-
-  const { data: user } = useQuery<User>({
-    queryKey: [`/api/users/${auth.currentUser?.uid}`],
-    enabled: !!auth.currentUser?.uid,
-  });
+  const { user, signOut } = useAuth();
 
   const handleLogout = async () => {
     try {
-      await logOut();
+      await signOut();
       setLocation("/auth");
     } catch (error) {
       toast({
@@ -36,25 +29,12 @@ export default function Profile() {
       <Card>
         <CardHeader className="text-center">
           <UserCircle className="h-24 w-24 mx-auto text-primary" />
-          <CardTitle className="mt-4">{user?.name}</CardTitle>
-          <p className="text-muted-foreground">{user?.email}</p>
+          <CardTitle className="mt-4">{user?.email}</CardTitle>
+          <p className="text-muted-foreground">{user?.user_metadata?.role || 'Cliente'}</p>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium">Número da Apólice</label>
-              <p className="text-lg">{user?.policyNumber || "Aguardando confirmação"}</p>
-            </div>
-
-            <Separator />
-
-            <div>
-              <label className="text-sm font-medium">Data de Cadastro</label>
-              <p className="text-lg">
-                {user?.createdAt && new Date(user.createdAt).toLocaleDateString()}
-              </p>
-            </div>
-            {user?.isAdmin && (
+            {user?.user_metadata?.role === 'admin' && (
               <Button
                 variant="outline"
                 className="w-full"
