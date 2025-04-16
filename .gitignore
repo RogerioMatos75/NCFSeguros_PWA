@@ -97,3 +97,6 @@ out/
 
 .vercel
 .env*.local
+
+# Firebase config file with sensitive keys
+client/src/lib/firebase.ts
