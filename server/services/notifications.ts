@@ -28,26 +28,27 @@ export async function sendPushNotification(userToken: string, notification: { ti
     }
 }
 
-export async function sendWhatsAppMessage(phone: string, name: string, url: string) {
+export async function sendWhatsAppMessage(phone: string, message: string) { // Modificado para aceitar 'message' diretamente
     try {
-        const message =
-            `Olá ${name}! 👋
+        // Removida a construção interna da mensagem
+        // const message =
+        //     `Olá ${name}! 👋
 
-Parabéns! Sua indicação para o seguro foi aprovada. 🎉
+        // Parabéns! Sua indicação para o seguro foi aprovada. 🎉
 
-Para darmos continuidade ao processo, por favor, preencha a proposta através do link abaixo:
+        // Para darmos continuidade ao processo, por favor, preencha a proposta através do link abaixo:
 
-📝 ${url}
+        // 📝 ${url}
 
-⚠️ Importante:
-- O preenchimento leva apenas alguns minutos
-- Todos os dados são tratados com segurança
-- Nossa equipe está à disposição para ajudar
+        // ⚠️ Importante:
+        // - O preenchimento leva apenas alguns minutos
+        // - Todos os dados são tratados com segurança
+        // - Nossa equipe está à disposição para ajudar
 
-Precisa de ajuda? Estamos aqui para te auxiliar! 😊
+        // Precisa de ajuda? Estamos aqui para te auxiliar! 😊
 
-Atenciosamente,
-Equipe NCF Seguros`;
+        // Atenciosamente,
+        // Equipe NCF Seguros`;
 
         const response = await axios.post(
             `https://graph.facebook.com/v17.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,

@@ -8,13 +8,16 @@ export interface IStorage {
   // User operations
   createUser(user: InsertUser): Promise<User>;
   getUserByUid(uid: string): Promise<User | undefined>;
+  getUserById(id: number): Promise<User | undefined>; // Adicionado
   updateUser(id: number, data: Partial<User>): Promise<User>;
   getAllUsers(): Promise<User[]>; // Adicionar na interface IStorage
 
   // Indication operations
   createIndication(userId: number, indication: InsertIndication): Promise<Indication>;
+  getIndicationById(id: number): Promise<Indication | undefined>; // Adicionado
   getIndicationsByUserId(userId: number): Promise<Indication[]>;
   getAllIndications(): Promise<Indication[]>;
+  updateIndication(id: number, data: Partial<Indication>): Promise<Indication>; // Adicionado (mais genérico)
   updateIndicationStatus(id: number, status: string): Promise<Indication>;
   updateIndicationProposal(id: number, proposalLink: string): Promise<Indication>;
 
@@ -53,6 +56,10 @@ export class MemStorage implements IStorage {
     return Array.from(this.users.values()).find(user => user.uid === uid);
   }
 
+  async getUserById(id: number): Promise<User | undefined> { // Adicionado
+    return this.users.get(id);
+  }
+
   async updateUser(id: number, data: Partial<User>): Promise<User> {
     const user = this.users.get(id);
     if (!user) throw new Error("User not found");
@@ -77,6 +84,10 @@ export class MemStorage implements IStorage {
     return indication;
   }
 
+  async getIndicationById(id: number): Promise<Indication | undefined> { // Adicionado
+    return this.indications.get(id);
+  }
+
   async getIndicationsByUserId(userId: number): Promise<Indication[]> {
     return Array.from(this.indications.values())
       .filter(indication => indication.userId === userId);
@@ -84,6 +95,14 @@ export class MemStorage implements IStorage {
 
   async getAllIndications(): Promise<Indication[]> {
     return Array.from(this.indications.values());
+  }
+
+  async updateIndication(id: number, data: Partial<Indication>): Promise<Indication> { // Adicionado
+    const indication = this.indications.get(id);
+    if (!indication) throw new Error("Indication not found");
+    const updatedIndication = { ...indication, ...data };
+    this.indications.set(id, updatedIndication);
+    return updatedIndication;
   }
 
   async updateIndicationStatus(id: number, status: string): Promise<Indication> {
@@ -126,4 +145,6 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+import { SupabaseStorage } from './supabaseStorage';
+
+export const storage = new SupabaseStorage();

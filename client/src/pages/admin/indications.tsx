@@ -1,14 +1,14 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
+import { Indication } from "@/../../shared/schema";
 import { Check, Send } from "lucide-react";
-import type { Indication } from "@shared/schema";
 
 export default function AdminIndications() {
   const { toast } = useToast();
-  const { data: indications } = useQuery<Indication[]>({
+  const { data: indications, refetch } = useQuery<Indication[]>({ // Adicionado refetch
     queryKey: ["/api/indications"],
   });
 
@@ -35,7 +35,7 @@ export default function AdminIndications() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           url: "https://villa.segfy.com/Publico/Segurados/Orcamentos/SolicitarCotacao?e=P6pb0nbwjHfnbNxXuNGlxw%3D%3D"
         })
       });
@@ -46,6 +46,40 @@ export default function AdminIndications() {
       toast({
         title: "Proposta Enviada",
         description: "O link foi enviado via WhatsApp para o indicado"
+      });
+      refetch(); // Atualiza a lista após sucesso
+    }
+  });
+
+  const confirmAndSendProposal = useMutation({ // Nova mutação
+    mutationFn: async (id: number) => {
+      const response = await fetch(`/api/indications/${id}/confirm-and-send`, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          proposalUrl: "https://villa.segfy.com/Publico/Segurados/Orcamentos/SolicitarCotacao?e=P6pb0nbwjHfnbNxXuNGlxw%3D%3D"
+        })
+      });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Erro desconhecido' }));
+        throw new Error(errorData.message || "Falha ao confirmar e enviar proposta");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Indicação Confirmada e Proposta Enviada",
+        description: "Notificações enviadas e status atualizado."
+      });
+      refetch(); // Atualiza a lista após sucesso
+    },
+    onError: (error: Error) => {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: error.message || "Não foi possível completar a ação."
       });
     }
   });
@@ -76,11 +110,10 @@ export default function AdminIndications() {
                     </p>
                     <p className="text-sm">
                       <span className="font-medium">Status:</span>{" "}
-                      <span className={`${
-                        indication.status === "completed" 
-                          ? "text-green-500" 
-                          : "text-yellow-500"
-                      }`}>
+                      <span className={`${indication.status === "completed"
+                        ? "text-green-500"
+                        : "text-yellow-500"
+                        }`}>
                         {indication.status === "completed" ? "Aprovado" : "Pendente"}
                       </span>
                     </p>
@@ -97,14 +130,26 @@ export default function AdminIndications() {
                       Aprovar
                     </Button>
                   )}
-                  <Button
+                  {indication.status === "pending" && ( // Mostrar apenas se pendente
+                    <Button
+                      size="sm"
+                      variant="default"
+                      onClick={() => confirmAndSendProposal.mutate(indication.id)}
+                      disabled={confirmAndSendProposal.isPending} // Desabilitar enquanto carrega
+                    >
+                      <Check className="mr-2 h-4 w-4" />
+                      {confirmAndSendProposal.isPending ? 'Processando...' : 'Confirmar e Enviar'}
+                    </Button>
+                  )}
+                  {/* Manter o botão de enviar proposta separadamente, se necessário, ou remover se o novo botão o substitui */}
+                  {/* <Button
                     size="sm"
                     variant="outline"
                     onClick={() => sendProposalLink.mutate(indication.id)}
                   >
                     <Send className="mr-2 h-4 w-4" />
-                    Enviar Proposta
-                  </Button>
+                    Enviar Proposta (Apenas Link)
+                  </Button> */}
                 </div>
               </div>
             ))}

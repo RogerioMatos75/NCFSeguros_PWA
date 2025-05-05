@@ -1,114 +1,111 @@
-import { Switch, Route } from "wouter";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "./lib/queryClient";
-import { Toaster } from "@/components/ui/toaster";
-import { Navbar } from "@/components/navbar";
-import { ProtectedRoute } from "@/components/auth/protected-route";
-import { AuthProvider } from "@/components/auth/AuthProvider";
-import Splash from "@/pages/splash";
-import Auth from "@/pages/auth";
-import AdminLogin from "@/pages/admin/login";
-import AdminDashboard from "@/pages/admin/dashboard";
-import Dashboard from "@/pages/dashboard";
-import Indicate from "@/pages/indicate";
-import History from "@/pages/history";
-import Rewards from "@/pages/rewards";
-import Profile from "@/pages/profile";
-import NotFound from "@/pages/not-found";
-import AdminPromote from "@/pages/admin/promote";
-import AdminIndications from "@/pages/admin/indications";
+// App.tsx
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import ProtectedRoute from './components/ProtectedRoute'; // Adjust path if needed
 
-// Layout para páginas que precisam de autenticação
-function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="min-h-screen bg-background">
-      {children}
-      <Navbar />
-    </div>
-  );
-}
-
-function Router() {
-  return (
-    <Switch>
-      <Route path="/" component={Splash} />
-      <Route path="/auth" component={Auth} />
-      <Route path="/admin/login" component={AdminLogin} />
-
-      {/* Rotas protegidas administrativas */}
-      <Route path="/admin/promote">
-        <ProtectedRoute adminOnly>
-          <AuthenticatedLayout>
-            <AdminPromote />
-          </AuthenticatedLayout>
-        </ProtectedRoute>
-      </Route>
-      <Route path="/admin/dashboard">
-        <ProtectedRoute adminOnly>
-          <AuthenticatedLayout>
-            <AdminDashboard />
-          </AuthenticatedLayout>
-        </ProtectedRoute>
-      </Route>
-      <Route path="/admin/indications">
-        <ProtectedRoute adminOnly>
-          <AuthenticatedLayout>
-            <AdminIndications />
-          </AuthenticatedLayout>
-        </ProtectedRoute>
-      </Route>
-
-      {/* Rotas protegidas normais */}
-      <Route path="/dashboard">
-        <ProtectedRoute>
-          <AuthenticatedLayout>
-            <Dashboard />
-          </AuthenticatedLayout>
-        </ProtectedRoute>
-      </Route>
-      <Route path="/indicate">
-        <ProtectedRoute>
-          <AuthenticatedLayout>
-            <Indicate />
-          </AuthenticatedLayout>
-        </ProtectedRoute>
-      </Route>
-      <Route path="/history">
-        <ProtectedRoute>
-          <AuthenticatedLayout>
-            <History />
-          </AuthenticatedLayout>
-        </ProtectedRoute>
-      </Route>
-      <Route path="/rewards">
-        <ProtectedRoute>
-          <AuthenticatedLayout>
-            <Rewards />
-          </AuthenticatedLayout>
-        </ProtectedRoute>
-      </Route>
-      <Route path="/profile">
-        <ProtectedRoute>
-          <AuthenticatedLayout>
-            <Profile />
-          </AuthenticatedLayout>
-        </ProtectedRoute>
-      </Route>
-      <Route component={NotFound} />
-    </Switch>
-  );
-}
+// Import your page components
+import Dashboard from './pages/Dashboard';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
+import Products from './pages/Products';
+import Orders from './pages/Orders';
+import AdminUsers from './pages/AdminUsers';
+import AdminSettings from './pages/AdminSettings';
+import AdminReports from './pages/AdminReports';
+import UserManagement from './pages/UserManagement'; // Assuming this is the component for line 51
+import LoginPage from './pages/LoginPage'; // Example public route
+import NotFoundPage from './pages/NotFoundPage'; // Example catch-all
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <div className="min-h-screen bg-background">
-          <Router />
-        </div>
-        <Toaster />
-      </AuthProvider>
-    </QueryClientProvider>
+    <Router>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/login" element={<LoginPage />} />
+
+        {/* Protected Routes */}
+        <Route
+          path="/dashboard" // Route handles the path
+          element={ // Route uses the element prop
+            <ProtectedRoute> {/* ProtectedRoute wraps the component */}
+              <Dashboard /> {/* The actual component to render */}
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <Settings />
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="/products"
+          element={
+            <ProtectedRoute>
+              <Products />
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="/orders"
+          element={
+            <ProtectedRoute>
+              <Orders />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Admin Protected Routes */}
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute isAdminRoute={true}> {/* Pass isAdminRoute here */}
+              <AdminUsers />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/settings"
+          element={
+            <ProtectedRoute isAdminRoute={true}>
+              <AdminSettings />
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="/admin/reports"
+          element={
+            <ProtectedRoute isAdminRoute={true}>
+              <AdminReports />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Another Protected Route (assuming line 51 was meant to be protected) */}
+         <Route
+          path="/user-management" // Example path
+          element={
+            <ProtectedRoute>
+              <UserManagement />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Catch-all Route for 404 */}
+        <Route path="*" element={<NotFoundPage />} />
+
+      </Routes>
+    </Router>
   );
 }
 

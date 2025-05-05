@@ -1,20 +1,18 @@
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Home, UserPlus, History, Gift, User } from "lucide-react";
+import { LayoutDashboard, ClipboardList, Users } from "lucide-react";
 
-export function Navbar() {
+export function AdminNavbar() {
   const [location, setLocation] = useLocation();
 
   const navItems = [
-    { icon: Home, label: "Home", path: "/dashboard" },
-    { icon: UserPlus, label: "Indicar", path: "/indicate" },
-    { icon: History, label: "Histórico", path: "/history" },
-    { icon: Gift, label: "Recompensas", path: "/rewards" },
-    { icon: User, label: "Perfil", path: "/profile" },
+    { icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" },
+    { icon: ClipboardList, label: "Indicações", path: "/admin/indications" },
+    { icon: Users, label: "Promoções", path: "/admin/promote" },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-background border-t z-50">
+    <nav className="fixed top-0 left-0 right-0 bg-background border-b z-50">
       <div className="flex justify-around p-2 max-w-lg mx-auto">
         {navItems.map((item) => (
           <Button
