@@ -45,7 +45,7 @@ export class MemStorage implements IStorage {
       ...insertUser,
       id,
       createdAt: new Date(),
-      policyNumber: insertUser.policyNumber || null,
+      policyNumber: insertUser.policyNumber || undefined, // Ou apenas insertUser.policyNumber
       isAdmin: insertUser.isAdmin || false
     };
     this.users.set(id, user);

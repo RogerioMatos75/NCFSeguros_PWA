@@ -127,7 +127,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (referrerUser && referrerUser.pushToken) { // Verificar se pushToken existe
          const pushMessage = `Sua indicação para ${indication.name} foi confirmada! Você ganhou 1% de desconto. Se contratarem, você ganha +1% na renovação.`;
          try {
-           await sendPushNotification(referrerUser.pushToken, "Indicação Confirmada!", pushMessage);
+           await sendPushNotification(referrerUser.pushToken, {
+             title: "Indicação Confirmada!",
+             body: pushMessage
+           });
          } catch (pushError) {
            console.error(`Failed to send push notification to ${referrerUser.email}:`, pushError);
            // Consider how to handle push notification errors (e.g., log, but continue)

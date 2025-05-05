@@ -16,21 +16,22 @@ export async function signInWithGoogle() {
     }
 
     // Login/Registro no Supabase usando o email do Google
+    // signInWithOAuth inicia o fluxo e redireciona, não retorna o usuário diretamente.
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google' as Provider,
       options: {
         redirectTo: window.location.origin,
-        queryParams: {
-          access_token: await googleUser.getIdToken(),
-          prompt: 'select_account'
-        }
+        // queryParams não são necessários para o fluxo padrão do Google OAuth com Supabase
+        // A passagem do token do Firebase aqui não é o método padrão.
       }
     });
 
     if (error) throw error;
 
-    // Se o login for bem sucedido, retorna os dados do usuário
-    return data.session?.user;
+    // O fluxo OAuth foi iniciado. O Supabase redirecionará para o Google.
+    // Após o login no Google e o redirecionamento de volta, o estado de autenticação do Supabase será atualizado (geralmente via onAuthStateChange).
+    // A função pode retornar o usuário do Firebase ou null/void, pois o usuário do Supabase não está disponível neste ponto.
+    return googleUser; // Retornando o usuário do Firebase como exemplo. O estado do Supabase será tratado separadamente.
   } catch (error) {
     console.error("Erro ao fazer login com Google: ", error);
     throw error;

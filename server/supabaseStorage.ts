@@ -1,7 +1,10 @@
 import { db } from './db';
 import * as schema from '@shared/schema';
 import { eq, and } from 'drizzle-orm';
-import type { IStorage, InsertUser, User, InsertIndication, Indication, InsertReward, Reward } from './storage';
+// Importar a interface de storage.ts
+import type { IStorage } from './storage';
+// Importar os tipos diretamente de @shared/schema
+import type { InsertUser, User, InsertIndication, Indication, InsertReward, Reward } from '@shared/schema';
 
 export class SupabaseStorage implements IStorage {
 
@@ -47,13 +50,64 @@ export class SupabaseStorage implements IStorage {
     };
   }
 
+  async getUserById(id: number): Promise<User | null> {
+    const result = await db.select().from(schema.users).where(eq(schema.users.id, id));
+    if (!result.length) {
+      return null;
+    }
+    const user = result[0];
+    if (!user.createdAt) {
+      // Se createdAt for null/undefined, algo está errado com os dados ou schema.
+      throw new Error(`Data integrity issue: User ${id} has null createdAt.`);
+    }
+    // Após a verificação, o TypeScript sabe que user.createdAt é Date, satisfazendo o tipo User.
+    return user;
+  }
+
+  async getUserByUid(uid: string): Promise<User | null> {
+    const result = await db.select().from(schema.users).where(eq(schema.users.uid, uid));
+    if (!result.length) {
+      return null;
+    }
+    const user = result[0];
+    if (!user.createdAt) {
+      throw new Error(`Data integrity issue: User ${uid} has null createdAt.`);
+    }
+    return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User | null> {
+    const result = await db.select().from(schema.users).where(eq(schema.users.email, email));
+    if (!result.length) {
+      return null;
+    }
+    const user = result[0];
+    if (!user.createdAt) {
+      throw new Error(`Data integrity issue: User ${email} has null createdAt.`);
+    }
+    return user;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [newUser] = await db.insert(schema.users).values(insertUser).returning();
+    if (!newUser) throw new Error("Failed to create user");
+    // Ensure the returned object matches the User interface, especially boolean fields
+    return {
+        ...newUser,
+        isAdmin: newUser.isAdmin ?? false, // Handle potential null from DB
+        policyNumber: newUser.policyNumber ?? undefined // Handle potential null
+    };
+  }
+
   async getAllUsers(): Promise<User[]> {
     const users = await db.select().from(schema.users);
-    return users.map(user => ({
-        ...user,
-        isAdmin: user.isAdmin ?? false,
-        policyNumber: user.policyNumber ?? undefined
-    }));
+    return users.map(user => {
+      if (!user.createdAt) {
+        throw new Error(`Data integrity issue: User ${user.id} has null createdAt.`);
+      }
+      // Após a verificação, cada 'user' satisfaz o tipo User.
+      return user;
+    });
   }
 
   // Indication operations

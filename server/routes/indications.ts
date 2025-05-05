@@ -67,8 +67,9 @@ router.post("/indications/:id/send-proposal", async (req, res) => {
             .where(eq(indications.id, parseInt(id)))
             .returning();
 
-        // Enviar mensagem WhatsApp com a mensagem formatada
-        await sendWhatsAppMessage(indication.phone, indication.name, url);
+        // Formatar a mensagem antes de enviar
+        const message = `Olá ${indication.name}, aqui está o link para sua proposta de seguro: ${url}`;
+        await sendWhatsAppMessage(indication.phone, message);
 
         res.json({
             success: true,
